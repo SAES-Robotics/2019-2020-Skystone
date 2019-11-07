@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 @TeleOp(name="Skystone Drive")
 
 public class SkystoneDrive extends LinearOpMode {
-    private DcMotor fl, fr, bl, br;
+    private DcMotor fl, fr, bl, br, ta,da;
 
 
     public void runOpMode() {
@@ -19,6 +19,8 @@ public class SkystoneDrive extends LinearOpMode {
         fr = hardwareMap.get(DcMotor.class, "frontRight");
         bl = hardwareMap.get(DcMotor.class, "backLeft");
         br = hardwareMap.get(DcMotor.class, "backRight");
+        ta = hardwareMap.get(DcMotor.class, "topArm");
+        da = hardwareMap.get(DcMotor.class, "downArm");
 
         /*robotlift = hardwareMap.get(DcMotor.class, "RoboLift");
         armrotate = hardwareMap.get(DcMotor.class, "ArmRotate");
@@ -39,6 +41,10 @@ public class SkystoneDrive extends LinearOpMode {
         fr.setDirection(DcMotorSimple.Direction.REVERSE);
         br.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        ta.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        da.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        ta.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        da.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         //encoder settings
         /*robotlift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         armextend.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -82,7 +88,7 @@ public class SkystoneDrive extends LinearOpMode {
             /* gamepad1 controls */
             //sets the speed to slow if its down
 
-            if(gamepad1.left_trigger > 0.5){
+            /*if(gamepad1.left_trigger > 0.5){
                 speed /= 2;
                 down = true;
 
@@ -126,7 +132,19 @@ public class SkystoneDrive extends LinearOpMode {
 
             }
 
+             */
+            if(this.gamepad2.dpad_up){
+                ta.setPower(0.25);
+            }
+            else{ta.setPower(0);}
+
+            if(this.gamepad2.dpad_down){
+                    ta.setPower(-0.25);
+                }
+            else{ta.setPower(0);}
+
             telemetry.addData("% of Speed: ", speed);
+            telemetry.addData("encoder", ta.getCurrentPosition());
 
             telemetry.update();
         }
