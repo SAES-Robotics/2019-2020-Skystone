@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 @TeleOp(name="Skystone Drive")
 
 public class SkystoneDrive extends LinearOpMode {
-    private DcMotor fl, fr, bl, br, ta,da;
+    private DcMotor fl, fr, bl, br, ta,da,md;
 
 
     public void runOpMode() {
@@ -21,7 +21,7 @@ public class SkystoneDrive extends LinearOpMode {
         br = hardwareMap.get(DcMotor.class, "backRight");
         ta = hardwareMap.get(DcMotor.class, "topArm");
         da = hardwareMap.get(DcMotor.class, "downArm");
-
+        md = hardwareMap.get(DcMotor.class, "middleArm");
         /*robotlift = hardwareMap.get(DcMotor.class, "RoboLift");
         armrotate = hardwareMap.get(DcMotor.class, "ArmRotate");
         armextend = hardwareMap.get(DcMotor.class, "ArmExtend");
@@ -29,13 +29,12 @@ public class SkystoneDrive extends LinearOpMode {
         intake = hardwareMap.get(CRServo.class, "IntakeServo");
         */
         //make sure everything brakes
-        /*fl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        fl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         fr.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         bl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         br.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        robotlift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        armrotate.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        armextend.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);*/
+        ta.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE); //float
+        da.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //reverses the motors to make the logic easier
         fr.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -45,6 +44,8 @@ public class SkystoneDrive extends LinearOpMode {
         da.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         ta.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         da.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        md.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        md.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         //encoder settings
         /*robotlift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         armextend.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -66,10 +67,39 @@ public class SkystoneDrive extends LinearOpMode {
         double slow_speed = 0.1;
         double speed_mutplier = 0.3;
         boolean down = false;
+        double arm_speed = 0.5;
         while (opModeIsActive()) {
             //telemetry.addData("hi", opModeIsActive());
             /* gamepad2 controls */
+            if(this.gamepad2.dpad_right){
+                ta.setPower(0.5);
+            }
+            else if(this.gamepad2.dpad_left){
+                ta.setPower(-0.15);
+            }
+            else{ta.setPower(0);}
 
+
+            if(this.gamepad2.dpad_up){
+                da.setPower(-arm_speed);
+            }
+            else if(this.gamepad2.dpad_down){
+                da.setPower(arm_speed);}
+
+            else{da.setPower(0);}
+
+            if(this.gamepad2.left_trigger > 0.3){
+                md.setPower(arm_speed);
+            }
+            else if(this.gamepad2.right_trigger > 0.3){
+                md.setPower(-arm_speed);}
+
+            else{md.setPower(0);}
+
+
+            telemetry.addData("encoder", ta.getCurrentPosition());
+            telemetry.addData("encoder2", da.getCurrentPosition());
+            telemetry.addData("encoder3", md.getCurrentPosition());
             //runs the intake servo
             /*if(this.gamepad2.x)
                 intake.setPower(1);
@@ -88,7 +118,7 @@ public class SkystoneDrive extends LinearOpMode {
             /* gamepad1 controls */
             //sets the speed to slow if its down
 
-            /*if(gamepad1.left_trigger > 0.5){
+            if(gamepad1.left_trigger > 0.5){
                 speed /= 2;
                 down = true;
 
@@ -131,22 +161,8 @@ public class SkystoneDrive extends LinearOpMode {
                 down = false;
 
             }
-
-             */
-            if(this.gamepad2.dpad_up){
-                ta.setPower(0.25);
-            }
-            else{ta.setPower(0);}
-
-            if(this.gamepad2.dpad_down){
-                    ta.setPower(-0.25);
-                }
-            else{ta.setPower(0);}
-
-            telemetry.addData("% of Speed: ", speed);
-            telemetry.addData("encoder", ta.getCurrentPosition());
-
             telemetry.update();
         }
+
     }
 }
