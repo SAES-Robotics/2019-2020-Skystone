@@ -4,12 +4,14 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 
 
-@TeleOp(name="Skystone Drive")
+@TeleOp(name="Skystone Drive Alex")
 
-public class SkystoneDrive extends LinearOpMode {
-    private DcMotor fl, fr, bl, br, ta,da,md;
+public class SkystoneDrive_alex extends LinearOpMode {
+    private DcMotor fl, fr, bl, br, am,tp,en;
+    private Servo ts,ms,dbs;
 
 
     public void runOpMode() {
@@ -19,9 +21,12 @@ public class SkystoneDrive extends LinearOpMode {
         fr = hardwareMap.get(DcMotor.class, "frontRight");
         bl = hardwareMap.get(DcMotor.class, "backLeft");
         br = hardwareMap.get(DcMotor.class, "backRight");
-        ta = hardwareMap.get(DcMotor.class, "topArm");
-        da = hardwareMap.get(DcMotor.class, "downArm");
-        md = hardwareMap.get(DcMotor.class, "middleArm");
+        ts = hardwareMap.get(Servo.class, "topServo");
+        ms = hardwareMap.get(Servo.class, "middleServo");
+        dbs = hardwareMap.get(Servo.class, "doubleServo");
+        am = hardwareMap.get(DcMotor.class, "liftingMotor");
+        tp = hardwareMap.get(DcMotor.class, "topMotor");
+        en = hardwareMap.get(DcMotor.class, "endMotor");
         /*robotlift = hardwareMap.get(DcMotor.class, "RoboLift");
         armrotate = hardwareMap.get(DcMotor.class, "ArmRotate");
         armextend = hardwareMap.get(DcMotor.class, "ArmExtend");
@@ -33,19 +38,13 @@ public class SkystoneDrive extends LinearOpMode {
         fr.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         bl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         br.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        ta.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE); //float
-        da.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
 
         //reverses the motors to make the logic easier
         fr.setDirection(DcMotorSimple.Direction.REVERSE);
         br.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        ta.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        da.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        ta.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        da.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        md.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        md.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         //encoder settings
         /*robotlift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         armextend.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -54,9 +53,11 @@ public class SkystoneDrive extends LinearOpMode {
         armrotate.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robotlift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);*/
 
+
         //update status
         telemetry.addData("Status", "Initialized");
         telemetry.update();
+
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -67,59 +68,95 @@ public class SkystoneDrive extends LinearOpMode {
         double slow_speed = 0.1;
         double speed_mutplier = 0.3;
         boolean down = false;
-        double arm_speed = 0.5;
+
+        double speed_mutplier_2 = 0.1;
+        double ms_speed = 0;
+        double dbs_speed = 0;
+        double ts_speed = 0;
+
         while (opModeIsActive()) {
             //telemetry.addData("hi", opModeIsActive());
             /* gamepad2 controls */
-            if(this.gamepad2.dpad_right){
-                ta.setPower(0.5);
+            if(this.gamepad2.a ){
+                if(dbs_speed + speed_mutplier_2 >= 0.5){
+                    dbs_speed = 0.5;
+                }
+                else{
+                dbs_speed += speed_mutplier_2;
+                }
+                dbs.setPosition(dbs_speed);
             }
-            else if(this.gamepad2.dpad_left){
-                ta.setPower(-0.15);
+            else if(this.gamepad2.b ){
+                if(dbs_speed - speed_mutplier_2 <= 0){
+                    dbs_speed = 0;
+                }
+                else {
+                dbs_speed -=  speed_mutplier_2;
+                }
+                dbs.setPosition(dbs_speed);
             }
-            else{ta.setPower(0);}
+
+            telemetry.addData("dbs speed",dbs_speed);
 
 
-            if(this.gamepad2.dpad_up){
-                da.setPower(-arm_speed);
+
+            if(this.gamepad2.left_trigger>0.3 ){
+                if(ts_speed + speed_mutplier_2 >= 1){
+                    ts_speed = 1;
+                }
+                else {
+                ts_speed += speed_mutplier_2;}
+                ts.setPosition(ts_speed);
             }
-            else if(this.gamepad2.dpad_down){
-                da.setPower(arm_speed);}
-
-            else{da.setPower(0);}
-
-            if(this.gamepad2.left_trigger > 0.3){
-                md.setPower(arm_speed);
+            else if(this.gamepad2.left_bumper){
+                if(ts_speed - speed_mutplier_2 <= 0){
+                    ts_speed = 0;
+                }
+                else{
+                    ts_speed -= speed_mutplier_2;
+                }
+                ts.setPosition(ts_speed);
             }
-            else if(this.gamepad2.right_trigger > 0.3){
-                md.setPower(-arm_speed);}
 
-            else{md.setPower(0);}
+            telemetry.addData("ts speed",ts_speed);
+
+            if(this.gamepad2.right_trigger > 0.3){
+                if(ms_speed + speed_mutplier_2 >= 1){
+                    ms_speed = 1;
+                }
+                else{
+                ms_speed += speed_mutplier_2;
+                }
+                ms.setPosition(ms_speed);
+            }
+            else if(this.gamepad2.right_bumper){
+                if(ms_speed - speed_mutplier_2 <= 0){
+                    ms_speed = 0;
+                }
+                else{
+                ms_speed -= speed_mutplier_2;
+                }
+                ms.setPosition(ms_speed);
+                }
 
 
-            telemetry.addData("encoder", ta.getCurrentPosition());
-            telemetry.addData("encoder2", da.getCurrentPosition());
-            telemetry.addData("encoder3", md.getCurrentPosition());
-            //runs the intake servo
-            /*if(this.gamepad2.x)
-                intake.setPower(1);
-            else if(this.gamepad2.a)
-                intake.setPower(0);
-            else if(this.gamepad2.b)
-                intake.setPower(-1);
 
-            //controls for the robot lift
-            robotlift.setPower( (this.gamepad2.left_bumper && (robotlift.getCurrentPosition() > 0 || this.gamepad2.y) ? 1 : 0) - (this.gamepad2.right_bumper ? 1 : 0) );
+            telemetry.addData("ms speed",ms_speed);
 
-            //controls for the arm
-            armrotate.setPower( (this.gamepad2.left_trigger - this.gamepad2.right_trigger) * 0.4 ); //positive is up/counterclockwise
-            armextend.setPower( ( (this.gamepad2.dpad_down ? 1 : 0) - ( this.gamepad2.dpad_up ? 1 : 0) ) * 0.8 );
-            */
+            if(gamepad2.dpad_up){
+                speed_mutplier_2 += 0.05;
+            }
+            if(gamepad2.dpad_up){
+                speed_mutplier_2 -= 0.05;
+            }
+            en.setPower(this.gamepad2.left_stick_y * 5);
+            en.setPower(this.gamepad2.right_stick_y * 5);
+            tp.setPower(this.gamepad2.left_stick_x * 5);
             /* gamepad1 controls */
             //sets the speed to slow if its down
 
             if(gamepad1.left_trigger > 0.5){
-                speed /= 2;
+                speed /= 3;
                 down = true;
 
             }
@@ -128,7 +165,7 @@ public class SkystoneDrive extends LinearOpMode {
             if(gamepad1.dpad_up){
                 if(d_pad && speed < 1.0)
                     speed += speed_mutplier;
-                    slow_speed += speed_mutplier;
+                slow_speed += speed_mutplier;
                 d_pad = false;
             }
             else if(gamepad1.dpad_down){
@@ -137,7 +174,7 @@ public class SkystoneDrive extends LinearOpMode {
                         slow_speed -= speed_mutplier;
                     }
                     else{
-                    speed = speed - speed_mutplier;
+                        speed = speed - speed_mutplier;
                     }
                 d_pad = false;
             }else
@@ -145,10 +182,8 @@ public class SkystoneDrive extends LinearOpMode {
 
 
 
-
-
-            double move0 = this.gamepad1.left_stick_y + this.gamepad1.left_stick_x;
-            double move1 = this.gamepad1.left_stick_y - this.gamepad1.left_stick_x;
+            double move0 = this.gamepad1.left_stick_y - this.gamepad1.left_stick_x;
+            double move1 = this.gamepad1.left_stick_y + this.gamepad1.left_stick_x;
 
             //run the wheels
             fl.setPower( (move1 - this.gamepad1.right_stick_x) * speed );
@@ -161,6 +196,10 @@ public class SkystoneDrive extends LinearOpMode {
                 down = false;
 
             }
+            telemetry.addData("brspeed",((move1 + this.gamepad1.right_stick_x) * speed));
+            telemetry.addData("flspeed",((move1 - this.gamepad1.right_stick_x) * speed));
+            telemetry.addData("blspeed",((move0 - this.gamepad1.right_stick_x) * speed));
+            telemetry.addData("frspeed",((move0 + this.gamepad1.right_stick_x) * speed));
             telemetry.update();
         }
 
