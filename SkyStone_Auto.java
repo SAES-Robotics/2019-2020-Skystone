@@ -1,8 +1,15 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 @Autonomous(name="SkyStone Autonomous")
 public class SkyStone_Auto extends LinearOpMode {
@@ -15,6 +22,8 @@ public class SkyStone_Auto extends LinearOpMode {
     //keep track of angles
     private Orientation lastAngles = new Orientation();
     private double globalAngle, correction;
+    
+    private static final double STRAFE = 44.1, MOVE = 35, TURN = 8; //taken from last years have to set
 
 
     /* MOVEMENT METHODS */
@@ -89,7 +98,7 @@ public class SkyStone_Auto extends LinearOpMode {
 
     // strafes a certain number of centimeters (not recommended)
     private void strafeTo(double cen, double pow, double angle) {
-        fl.setTargetPosition( (int) Math.round(inches * STRAFE) + fl.getCurrentPosition() );
+        fl.setTargetPosition( (int) Math.round(cent * STRAFE) + fl.getCurrentPosition() );
 
         if (fl.getCurrentPosition() < fl.getTargetPosition())
             while ( opModeIsActive() && fl.getCurrentPosition() < fl.getTargetPosition() ) {
