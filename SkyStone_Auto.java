@@ -42,15 +42,12 @@ public class SkyStone_Auto extends LinearOpMode {
     private static final double STRAFE = 44.1, MOVE = 35, TURN = 8; //taken from last years have to set
 
 
-    /*
-    Variables for the detection
-     */
+    /* Variables for the detection */
     private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
-    private static final boolean PHONE_IS_PORTRAIT = false  ;
+    private static final boolean PHONE_IS_PORTRAIT = false;
 
 
-    private static final String VUFORIA_KEY =
-            "AfjKWRL/////AAABmfOEbMH3xUPLtlD2h7I4sNdQnVvF1uqK/Rye/iqJN0YFnthrt0LwwqpR6HnB5dY35Zgbdrn6BLpSjLWVrUPqQfsRh9BdK7rUVtf9yPhfSefN3OsepEiUEXxzB2rMxgUjs47BLgc3V7RCUwdgKGcWvY2k9xfWj+ampWjN1KaHLsB25KlgrF2IkTZyC0QuTk+Mbl0mu12iKhKv0EQsLS3WMya1qDD4KzwyH8mqEyqMg50WVYVT7rGdBk29nhgbe5TWhrqpVzSZdXdiP2Zqgg0C670HDC5LfOtkyatHetKYOSXq6n1r9xm4B9HjX97ZKy+vJMvZLp5EFvLLpz54O64+c1QJ8q4eRkHRb5e2NOXKjIgd  ";
+    private static final String VUFORIA_KEY = "AfjKWRL/////AAABmfOEbMH3xUPLtlD2h7I4sNdQnVvF1uqK/Rye/iqJN0YFnthrt0LwwqpR6HnB5dY35Zgbdrn6BLpSjLWVrUPqQfsRh9BdK7rUVtf9yPhfSefN3OsepEiUEXxzB2rMxgUjs47BLgc3V7RCUwdgKGcWvY2k9xfWj+ampWjN1KaHLsB25KlgrF2IkTZyC0QuTk+Mbl0mu12iKhKv0EQsLS3WMya1qDD4KzwyH8mqEyqMg50WVYVT7rGdBk29nhgbe5TWhrqpVzSZdXdiP2Zqgg0C670HDC5LfOtkyatHetKYOSXq6n1r9xm4B9HjX97ZKy+vJMvZLp5EFvLLpz54O64+c1QJ8q4eRkHRb5e2NOXKjIgd  ";
 
     // Since ImageTarget trackables use mm to specifiy their dimensions, we must use mm for all the physical dimension.
     // We will define some constants and conversions here
@@ -82,7 +79,6 @@ public class SkyStone_Auto extends LinearOpMode {
     List<VuforiaTrackable> allTrackables = new ArrayList<VuforiaTrackable>();
     VuforiaTrackables targetsSkyStone = this.vuforia.loadTrackablesFromAsset("Skystone");
 
-;
 
     /* MOVEMENT METHODS */
 
@@ -94,20 +90,20 @@ public class SkyStone_Auto extends LinearOpMode {
             while ( opModeIsActive() && fl.getCurrentPosition() < fl.getTargetPosition() ) {
                 correction = checkDirection(angle, 0.03);
 
-                fl.setPower(-speed + correction);
-                fr.setPower(-speed);
-                bl.setPower(-speed + correction);
-                br.setPower(-speed);
+                fl.setPower(speed - correction);
+                fr.setPower(speed);
+                bl.setPower(speed - correction);
+                br.setPower(speed);
                 idle();
             }
         else
             while ( opModeIsActive() && fl.getCurrentPosition() > fl.getTargetPosition() ) {
                 correction = checkDirection(angle, 0.03);
 
-                fl.setPower(speed + correction);
-                fr.setPower(speed);
-                bl.setPower(speed + correction);
-                br.setPower(speed);
+                fl.setPower(-speed + correction);
+                fr.setPower(-speed);
+                bl.setPower(-speed + correction);
+                br.setPower(-speed);
                 idle();
             }
 
@@ -123,15 +119,15 @@ public class SkyStone_Auto extends LinearOpMode {
         double target = -getAngle() + degrees;
 
         if (degrees > 0) {   // turn right.
-            fl.setPower(-speed);
-            fr.setPower(speed);
-            bl.setPower(-speed);
-            br.setPower(speed);
-        } else if (degrees < 0) {   // turn left.
             fl.setPower(speed);
             fr.setPower(-speed);
             bl.setPower(speed);
             br.setPower(-speed);
+        } else if (degrees < 0) {   // turn left.
+            fl.setPower(-speed);
+            fr.setPower(speed);
+            bl.setPower(-speed);
+            br.setPower(speed);
         } else
             return;
 
@@ -162,19 +158,19 @@ public class SkyStone_Auto extends LinearOpMode {
             while ( opModeIsActive() && fl.getCurrentPosition() < fl.getTargetPosition() ) {
                 correction = checkDirection(angle, 0.02);
 
-                fl.setPower(-pow + correction);
-                fr.setPower(pow - correction);
-                bl.setPower(pow);
-                br.setPower(-pow);
+                fl.setPower(pow - correction);
+                fr.setPower(-pow + correction);
+                bl.setPower(-pow);
+                br.setPower(pow);
             }
         else
             while ( opModeIsActive() && fl.getCurrentPosition() > fl.getTargetPosition() ) {
                 correction = checkDirection(angle, 0.02);
 
-                fl.setPower(pow + correction);
-                fr.setPower(-pow - correction);
-                bl.setPower(-pow);
-                br.setPower(pow);
+                fl.setPower(-pow - correction);
+                fr.setPower(pow + correction);
+                bl.setPower(pow);
+                br.setPower(-pow);
             }
 
         fl.setPower(0);
@@ -245,7 +241,7 @@ public class SkyStone_Auto extends LinearOpMode {
      * Code for the detection code
      *
      */
-    private OpenGLMatrix detection(){
+    private VuforiaTrackables detection(){
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
         // VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
@@ -253,6 +249,9 @@ public class SkyStone_Auto extends LinearOpMode {
         parameters.cameraDirection   = CAMERA_CHOICE;
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
+        // Load the data sets for the trackable objects. These particular data
+        // sets are stored in the 'assets' part of our application.
+        VuforiaTrackables targetsSkyStone = this.vuforia.loadTrackablesFromAsset("Skystone");
         // Load the data sets for the trackable objects. These particular data
         // sets are stored in the 'assets' part of our application.
         VuforiaTrackable stoneTarget = targetsSkyStone.get(0);
@@ -371,7 +370,12 @@ public class SkyStone_Auto extends LinearOpMode {
         OpenGLMatrix robotFromCamera = OpenGLMatrix
                 .translation(CAMERA_FORWARD_DISPLACEMENT, CAMERA_LEFT_DISPLACEMENT, CAMERA_VERTICAL_DISPLACEMENT)
                 .multiplied(Orientation.getRotationMatrix(EXTRINSIC, YZX, DEGREES, phoneYRotate, phoneZRotate, phoneXRotate));
-        return  robotFromCamera;
+
+        for (VuforiaTrackable trackable : allTrackables) {
+            ((VuforiaTrackableDefaultListener) trackable.getListener()).setPhoneInformation(robotFromCamera, CAMERA_CHOICE);
+        }
+
+        return  targetsSkyStone;
     }
 
 
@@ -379,7 +383,15 @@ public class SkyStone_Auto extends LinearOpMode {
 
     public void runOpMode() {
 
-        //map the motors
+        //settings for the IMU
+        BNO055IMU.Parameters param = new BNO055IMU.Parameters();
+
+        param.mode                = BNO055IMU.SensorMode.IMU;
+        param.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        param.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        param.loggingEnabled      = false;
+
+        //map the motors and IMU
         fl = hardwareMap.get(DcMotor.class, "frontLeft");
         fr = hardwareMap.get(DcMotor.class, "frontRight");
         bl = hardwareMap.get(DcMotor.class, "backLeft");
@@ -387,6 +399,9 @@ public class SkyStone_Auto extends LinearOpMode {
         ta = hardwareMap.get(DcMotor.class, "topArm");
         da = hardwareMap.get(DcMotor.class, "downArm");
         md = hardwareMap.get(DcMotor.class, "middleArm");
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+
+        imu.initialize(param);
 
         //make sure everything brakes
         fl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -414,10 +429,8 @@ public class SkyStone_Auto extends LinearOpMode {
         telemetry.update();
 
 
-        OpenGLMatrix robotFromCamera = detection();
-        for (VuforiaTrackable trackable : allTrackables) {
-            ((VuforiaTrackableDefaultListener) trackable.getListener()).setPhoneInformation(robotFromCamera, CAMERA_CHOICE);
-        }
+        VuforiaTrackables targetsSkyStone = detection();
+
         targetsSkyStone.activate();
 
         // Wait for the game to start (driver presses PLAY)
