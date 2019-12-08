@@ -7,3 +7,8 @@ Goals:
 - identify and deliver skystones, placing them on the alliance foundation
 - move the foundation to the building zone
 - park under the skybridge
+
+## Driver Controlled
+Goals:
+- use [sliding controls](https://www.youtube.com/watch?v=dQw4w9WgXcQ) for the arms
+- allow for simultaneous panning and turning
