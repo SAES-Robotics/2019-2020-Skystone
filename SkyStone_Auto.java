@@ -84,10 +84,10 @@ public class SkyStone_Auto extends LinearOpMode {
 
     // moves foward or backward
     private void moveTo(double cen, double speed, double angle) {
-        fl.setTargetPosition( (int) Math.round(cen * MOVE) + fl.getCurrentPosition() );
+        fr.setTargetPosition( (int) Math.round(cen * MOVE) + fr.getCurrentPosition() );
 
-        if (fl.getCurrentPosition() < fl.getTargetPosition())
-            while ( opModeIsActive() && fl.getCurrentPosition() < fl.getTargetPosition() ) {
+        if (fr.getCurrentPosition() < fr.getTargetPosition())
+            while ( opModeIsActive() && fr.getCurrentPosition() < fr.getTargetPosition() ) {
                 correction = checkDirection(angle, 0.03);
 
                 fl.setPower(speed - correction);
@@ -97,7 +97,7 @@ public class SkyStone_Auto extends LinearOpMode {
                 idle();
             }
         else
-            while ( opModeIsActive() && fl.getCurrentPosition() > fl.getTargetPosition() ) {
+            while ( opModeIsActive() && fr.getCurrentPosition() > fr.getTargetPosition() ) {
                 correction = checkDirection(angle, 0.03);
 
                 fl.setPower(-speed + correction);
@@ -115,7 +115,7 @@ public class SkyStone_Auto extends LinearOpMode {
 
     // turns a certain number of degrees
     private void turnTo(double degrees, double speed) {
-        fl.setTargetPosition( (int) Math.round(degrees * TURN) + fl.getCurrentPosition() );
+        fr.setTargetPosition( (int) Math.round(degrees * TURN) + fr.getCurrentPosition() );
         double target = -getAngle() + degrees;
 
         if (degrees > 0) {   // turn right.
@@ -132,10 +132,10 @@ public class SkyStone_Auto extends LinearOpMode {
             return;
 
         int i = 1;
-        if (fl.getCurrentPosition() < fl.getTargetPosition())
-            while ( opModeIsActive() && fl.getCurrentPosition() < fl.getTargetPosition() ) { if(i++ % 15 == 0) getAngle(); else idle(); }
+        if (fr.getCurrentPosition() < fr.getTargetPosition())
+            while ( opModeIsActive() && fr.getCurrentPosition() < fr.getTargetPosition() ) { if(i++ % 15 == 0) getAngle(); else idle(); }
         else
-            while ( opModeIsActive() && fl.getCurrentPosition() > fl.getTargetPosition() ) { if(i++ % 15 == 0) getAngle(); else idle(); }
+            while ( opModeIsActive() && fr.getCurrentPosition() > fr.getTargetPosition() ) { if(i++ % 15 == 0) getAngle(); else idle(); }
 
         // turn the motors off.
         fl.setPower(0);
@@ -152,10 +152,10 @@ public class SkyStone_Auto extends LinearOpMode {
 
     // strafes a certain number of centimeters (not recommended)
     private void strafeTo(double cen, double pow, double angle) {
-        fl.setTargetPosition( (int) Math.round(cen * STRAFE) + fl.getCurrentPosition() );
+        fr.setTargetPosition( (int) Math.round(cen * STRAFE) + fr.getCurrentPosition() );
 
-        if (fl.getCurrentPosition() < fl.getTargetPosition())
-            while ( opModeIsActive() && fl.getCurrentPosition() < fl.getTargetPosition() ) {
+        if (fr.getCurrentPosition() < fr.getTargetPosition())
+            while ( opModeIsActive() && fr.getCurrentPosition() < fr.getTargetPosition() ) {
                 correction = checkDirection(angle, 0.02);
 
                 fl.setPower(pow - correction);
@@ -164,7 +164,7 @@ public class SkyStone_Auto extends LinearOpMode {
                 br.setPower(pow);
             }
         else
-            while ( opModeIsActive() && fl.getCurrentPosition() > fl.getTargetPosition() ) {
+            while ( opModeIsActive() && fr.getCurrentPosition() > fr.getTargetPosition() ) {
                 correction = checkDirection(angle, 0.02);
 
                 fl.setPower(-pow - correction);
@@ -419,24 +419,32 @@ public class SkyStone_Auto extends LinearOpMode {
         ta.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         da.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         md.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        fr.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         ta.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         da.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         md.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        fr.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        resetAngle();
+
+        VuforiaTrackables targetsSkyStone = detection();
+
+        //targetsSkyStone.activate();
 
         //update status
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-
-        VuforiaTrackables targetsSkyStone = detection();
-
-        targetsSkyStone.activate();
-
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-        //TODO
+        //update status
+        telemetry.addData("Status", "Running");
+        telemetry.update();
 
+        moveTo(50, 0.5, 0);
+
+        //targetsSkyStone.deactivate();
     }
 }
