@@ -39,7 +39,7 @@ public class SkyStone_Auto extends LinearOpMode {
     private Orientation lastAngles = new Orientation();
     private double globalAngle, correction;
 
-    private static final double STRAFE = 44.1, MOVE = 35, TURN = 8; //taken from last years have to set
+    private static final double STRAFE = 44.1, MOVE = 19.16, TURN = 14.55; //taken from last years have to set
 
 
     /* Variables for the detection */
@@ -76,35 +76,34 @@ public class SkyStone_Auto extends LinearOpMode {
     private float phoneYRotate    = 0;
     private float phoneZRotate    = 0;
 
-    List<VuforiaTrackable> allTrackables = new ArrayList<VuforiaTrackable>();
-    VuforiaTrackables targetsSkyStone = this.vuforia.loadTrackablesFromAsset("Skystone");
-
 
     /* MOVEMENT METHODS */
 
     // moves foward or backward
     private void moveTo(double cen, double speed, double angle) {
-        fr.setTargetPosition( (int) Math.round(cen * MOVE) + fr.getCurrentPosition() );
+        fr.setTargetPosition( (int) -Math.round(cen * MOVE) + fr.getCurrentPosition() );
 
-        if (fr.getCurrentPosition() < fr.getTargetPosition())
-            while ( opModeIsActive() && fr.getCurrentPosition() < fr.getTargetPosition() ) {
+        if (fr.getCurrentPosition() > fr.getTargetPosition())
+            while ( opModeIsActive() && fr.getCurrentPosition() > fr.getTargetPosition() ) {
                 correction = checkDirection(angle, 0.03);
-
+                telemetry.addData("forward, encoder",fr.getCurrentPosition());
                 fl.setPower(speed - correction);
                 fr.setPower(speed);
                 bl.setPower(speed - correction);
                 br.setPower(speed);
                 idle();
+                telemetry.update();
             }
         else
-            while ( opModeIsActive() && fr.getCurrentPosition() > fr.getTargetPosition() ) {
+            while ( opModeIsActive() && fr.getCurrentPosition() < fr.getTargetPosition() ) {
                 correction = checkDirection(angle, 0.03);
-
+                telemetry.addData("backward, encoder",fr.getCurrentPosition());
                 fl.setPower(-speed + correction);
                 fr.setPower(-speed);
                 bl.setPower(-speed + correction);
                 br.setPower(-speed);
                 idle();
+                telemetry.update();
             }
 
         fl.setPower(0);
@@ -115,8 +114,8 @@ public class SkyStone_Auto extends LinearOpMode {
 
     // turns a certain number of degrees
     private void turnTo(double degrees, double speed) {
-        fr.setTargetPosition( (int) Math.round(degrees * TURN) + fr.getCurrentPosition() );
-        double target = -getAngle() + degrees;
+        fr.setTargetPosition( (int) -Math.round(degrees * TURN) + fr.getCurrentPosition() );
+        double target = getAngle() - degrees;
 
         if (degrees > 0) {   // turn right.
             fl.setPower(speed);
@@ -132,10 +131,10 @@ public class SkyStone_Auto extends LinearOpMode {
             return;
 
         int i = 1;
-        if (fr.getCurrentPosition() < fr.getTargetPosition())
-            while ( opModeIsActive() && fr.getCurrentPosition() < fr.getTargetPosition() ) { if(i++ % 15 == 0) getAngle(); else idle(); }
+        if (fr.getCurrentPosition() > fr.getTargetPosition())
+            while ( opModeIsActive() && fr.getCurrentPosition() > fr.getTargetPosition() ) { if(i++ % 15 == 0){ telemetry.addData("angle", getAngle()); telemetry.update();} else idle(); }
         else
-            while ( opModeIsActive() && fr.getCurrentPosition() > fr.getTargetPosition() ) { if(i++ % 15 == 0) getAngle(); else idle(); }
+            while ( opModeIsActive() && fr.getCurrentPosition() < fr.getTargetPosition() ) { if(i++ % 15 == 0){ telemetry.addData("angle", getAngle()); telemetry.update();} else idle(); }
 
         // turn the motors off.
         fl.setPower(0);
@@ -144,7 +143,7 @@ public class SkyStone_Auto extends LinearOpMode {
         br.setPower(0);
 
         //correct the turn until within acceptable error bounds
-        double error = target + getAngle();
+        double error = target - getAngle();
 
         if(Math.abs(error) > 2)
             turnTo(error, speed);
@@ -252,6 +251,7 @@ public class SkyStone_Auto extends LinearOpMode {
         // Load the data sets for the trackable objects. These particular data
         // sets are stored in the 'assets' part of our application.
         VuforiaTrackables targetsSkyStone = this.vuforia.loadTrackablesFromAsset("Skystone");
+
         // Load the data sets for the trackable objects. These particular data
         // sets are stored in the 'assets' part of our application.
         VuforiaTrackable stoneTarget = targetsSkyStone.get(0);
@@ -412,8 +412,10 @@ public class SkyStone_Auto extends LinearOpMode {
         da.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //reverses the motors to make the logic easier
-        fr.setDirection(DcMotorSimple.Direction.REVERSE);
+        fl.setDirection(DcMotorSimple.Direction.REVERSE);
+        bl.setDirection(DcMotorSimple.Direction.REVERSE);
         br.setDirection(DcMotorSimple.Direction.REVERSE);
+
 
         //encoder settings
         ta.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -443,7 +445,7 @@ public class SkyStone_Auto extends LinearOpMode {
         telemetry.addData("Status", "Running");
         telemetry.update();
 
-        moveTo(50, 0.5, 0);
+        turnTo(90, 0.5);
 
         //targetsSkyStone.deactivate();
     }
