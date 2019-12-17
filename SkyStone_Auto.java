@@ -37,9 +37,9 @@ public class SkyStone_Auto extends LinearOpMode {
 
     //keep track of angles
     private Orientation lastAngles = new Orientation();
-    private double globalAngle, correction;
+    private double globalAngle, correction, cAngle = 0;
 
-    private static final double STRAFE = 44.1, MOVE = 19.16, TURN = 14.55; //taken from last years have to set
+    private static final double STRAFE = 24.5, MOVE = 19.16, TURN = 14.55; //taken from last years have to set
 
 
     /* Variables for the detection */
@@ -80,12 +80,12 @@ public class SkyStone_Auto extends LinearOpMode {
     /* MOVEMENT METHODS */
 
     // moves foward or backward
-    private void moveTo(double cen, double speed, double angle) {
+    private void moveTo(double cen, double speed) {
         fr.setTargetPosition( (int) -Math.round(cen * MOVE) + fr.getCurrentPosition() );
 
         if (fr.getCurrentPosition() > fr.getTargetPosition())
             while ( opModeIsActive() && fr.getCurrentPosition() > fr.getTargetPosition() ) {
-                correction = checkDirection(angle, 0.03);
+                correction = checkDirection(cAngle, 0.03);
                 telemetry.addData("forward, encoder",fr.getCurrentPosition());
                 fl.setPower(speed - correction);
                 fr.setPower(speed);
@@ -96,7 +96,7 @@ public class SkyStone_Auto extends LinearOpMode {
             }
         else
             while ( opModeIsActive() && fr.getCurrentPosition() < fr.getTargetPosition() ) {
-                correction = checkDirection(angle, 0.03);
+                correction = checkDirection(cAngle, 0.03);
                 telemetry.addData("backward, encoder",fr.getCurrentPosition());
                 fl.setPower(-speed + correction);
                 fr.setPower(-speed);
@@ -115,7 +115,16 @@ public class SkyStone_Auto extends LinearOpMode {
     }
 
     // turns a certain number of degrees
+    //
+    // makes sure that the current angle is only
+    // modified once
     private void turnTo(double degrees, double speed) {
+        cAngle += degrees;
+        turnTo(degrees, speed, true);
+    }
+
+    //DONT USE THIS ONE
+    private void turnTo(double degrees, double speed, boolean lol) {
         fr.setTargetPosition( (int) -Math.round(degrees * TURN) + fr.getCurrentPosition() );
         double target = getAngle() - degrees;
 
@@ -154,32 +163,34 @@ public class SkyStone_Auto extends LinearOpMode {
     }
 
     // strafes a certain number of centimeters (not recommended)
-    private void strafeTo(double cen, double pow, double angle) {
-        fr.setTargetPosition( (int) Math.round(cen * STRAFE) + fr.getCurrentPosition() );
+    private void strafeTo(double cen, double pow) {
+        fr.setTargetPosition( (int) -Math.round(cen * STRAFE) + fr.getCurrentPosition() );
 
         if (fr.getCurrentPosition() < fr.getTargetPosition())
             while ( opModeIsActive() && fr.getCurrentPosition() < fr.getTargetPosition() ) {
-                correction = checkDirection(angle, 0.02);
+                correction = checkDirection(cAngle, 0.02);
+
+                fl.setPower(-pow + correction);
+                fr.setPower(pow - correction);
+                bl.setPower(pow);
+                br.setPower(-pow);
+            }
+        else
+            while ( opModeIsActive() && fr.getCurrentPosition() > fr.getTargetPosition() ) {
+                correction = checkDirection(cAngle, 0.02);
 
                 fl.setPower(pow - correction);
                 fr.setPower(-pow + correction);
                 bl.setPower(-pow);
                 br.setPower(pow);
             }
-        else
-            while ( opModeIsActive() && fr.getCurrentPosition() > fr.getTargetPosition() ) {
-                correction = checkDirection(angle, 0.02);
-
-                fl.setPower(-pow - correction);
-                fr.setPower(pow + correction);
-                bl.setPower(pow);
-                br.setPower(-pow);
-            }
 
         fl.setPower(0);
         fr.setPower(0);
         bl.setPower(0);
         br.setPower(0);
+
+        betterwait(250);
     }
 
 
@@ -192,6 +203,7 @@ public class SkyStone_Auto extends LinearOpMode {
         lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
         globalAngle = 0;
+        cAngle = 0;
     }
 
     /**
@@ -456,9 +468,7 @@ public class SkyStone_Auto extends LinearOpMode {
 
         resetAngle();
 
-        moveTo(50,0.5,0);
-        turnTo(90, 0.5);
-        moveTo(50,0.5,90);
+        strafeTo(50, 0.5);
 
         //targetsSkyStone.deactivate();
     }
