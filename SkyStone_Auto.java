@@ -110,6 +110,8 @@ public class SkyStone_Auto extends LinearOpMode {
         fr.setPower(0);
         bl.setPower(0);
         br.setPower(0);
+
+        betterwait(250);
     }
 
     // turns a certain number of degrees
@@ -132,9 +134,9 @@ public class SkyStone_Auto extends LinearOpMode {
 
         int i = 1;
         if (fr.getCurrentPosition() > fr.getTargetPosition())
-            while ( opModeIsActive() && fr.getCurrentPosition() > fr.getTargetPosition() ) { if(i++ % 15 == 0){ telemetry.addData("angle", getAngle()); telemetry.update();} else idle(); }
+            while ( opModeIsActive() && fr.getCurrentPosition() > fr.getTargetPosition() ) { if(i++ % 15 == 0) getAngle(); else idle(); }
         else
-            while ( opModeIsActive() && fr.getCurrentPosition() < fr.getTargetPosition() ) { if(i++ % 15 == 0){ telemetry.addData("angle", getAngle()); telemetry.update();} else idle(); }
+            while ( opModeIsActive() && fr.getCurrentPosition() < fr.getTargetPosition() ) { if(i++ % 15 == 0) getAngle(); else idle(); }
 
         // turn the motors off.
         fl.setPower(0);
@@ -142,10 +144,12 @@ public class SkyStone_Auto extends LinearOpMode {
         bl.setPower(0);
         br.setPower(0);
 
-        //correct the turn until within acceptable error bounds
-        double error = target - getAngle();
+        betterwait(250);
 
-        if(Math.abs(error) > 2)
+        //correct the turn until within acceptable error bounds
+        double error = -target + getAngle();
+
+        if(error * error > 2)
             turnTo(error, speed);
     }
 
@@ -234,6 +238,13 @@ public class SkyStone_Auto extends LinearOpMode {
             correction = -angle * gain;        // reverse sign of angle for correction.
 
         return correction;
+    }
+
+    private void betterwait(long millis){
+        long t = System.currentTimeMillis() + millis;
+
+        while(t > System.currentTimeMillis() && opModeIsActive())
+            idle();
     }
 
     /**
@@ -428,8 +439,6 @@ public class SkyStone_Auto extends LinearOpMode {
         md.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         fr.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        resetAngle();
-
         VuforiaTrackables targetsSkyStone = detection();
 
         //targetsSkyStone.activate();
@@ -445,7 +454,11 @@ public class SkyStone_Auto extends LinearOpMode {
         telemetry.addData("Status", "Running");
         telemetry.update();
 
+        resetAngle();
+
+        moveTo(50,0.5,0);
         turnTo(90, 0.5);
+        moveTo(50,0.5,90);
 
         //targetsSkyStone.deactivate();
     }
