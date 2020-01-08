@@ -123,11 +123,11 @@ public class SkyStone_Auto extends LinearOpMode {
     // modified once
     private void turnTo(double degrees, double speed) {
         cAngle += degrees;
-        turnToo(degrees, speed, true);
+        turnToo(degrees, speed);
     }
 
     //DONT USE THIS ONE
-    private void turnToo(double degrees, double speed, boolean lol) {
+    private void turnToo(double degrees, double speed) {
         fr.setTargetPosition( (int) -Math.round(degrees * TURN) + fr.getCurrentPosition() );
         double target = getAngle() - degrees;
 
@@ -162,7 +162,7 @@ public class SkyStone_Auto extends LinearOpMode {
         double error = -target + getAngle();
 
         if(error * error > 2)
-            turnTo(error, speed);
+            turnToo(error, speed);
     }
 
     // strafes a certain number of centimeters (not recommended)
