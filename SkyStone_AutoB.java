@@ -123,11 +123,11 @@ public class SkyStone_AutoB extends LinearOpMode {
     // modified once
     private void turnTo(double degrees, double speed) {
         cAngle += degrees;
-        turnToo(degrees, speed, true);
+        turnToo(degrees, speed);
     }
 
     //DONT USE THIS ONE
-    private void turnToo(double degrees, double speed, boolean lol) {
+    private void turnToo(double degrees, double speed) {
         fr.setTargetPosition( (int) -Math.round(degrees * TURN) + fr.getCurrentPosition() );
         double target = getAngle() - degrees;
 
@@ -162,7 +162,7 @@ public class SkyStone_AutoB extends LinearOpMode {
         double error = -target + getAngle();
 
         if(error * error > 2)
-            turnTo(error, speed);
+            turnToo(error, speed);
     }
 
     // strafes a certain number of centimeters (not recommended)
@@ -621,13 +621,13 @@ public class SkyStone_AutoB extends LinearOpMode {
             }
             else {
 
-                if (instrafed > -70 && !strafed) {
+                if (instrafed < 70 && !strafed) {
                     strafeTo(10, 1);
-                    instrafed -= 10;
+                    instrafed += 10;
                 } else {
                     strafed = true;
                     strafeTo(-20, 1);
-                    instrafed += 20;
+                    instrafed -= 20;
                 }
 
             }
@@ -640,10 +640,10 @@ public class SkyStone_AutoB extends LinearOpMode {
         VectorF translation = lastLocation.getTranslation();
         telemetry.addData("Pos (in)", "{X, Y, Z} = %.1f, %.1f, %.1f",
                 translation.get(0) / mmPerInch, translation.get(1) / mmPerInch, translation.get(2) / mmPerInch);
-        strafeTo((-(translation.get(1)/ mmPerInch)*2.54)+7,0.75);
+        strafeTo((-(translation.get(1)/ mmPerInch)*2.54)-7,0.75);
         telemetry.addData("strafed","done");
         telemetry.update();
-        instrafed -= (-(translation.get(0) / mmPerInch)*2.54) - 32;
+        instrafed += (-(translation.get(0) / mmPerInch)*2.54) - 32;
 
         moveTo((-(translation.get(0) / mmPerInch)*2.54)-32,0.25);
 
@@ -651,14 +651,14 @@ public class SkyStone_AutoB extends LinearOpMode {
 
 
         moveTo(-12,0.6);
-        turnTo(-90,0.4);
+        turnTo(90,0.4);
         sv.setPosition(0.5);
         telemetry.addData("strafed",instrafed);
         telemetry.addData("moved",((-(translation.get(0) / mmPerInch)*2.54) - 32));
         telemetry.update();
 
         betterwait(4000);
-        moveTo(173+instrafed,0.8);
+        moveTo(173-instrafed,0.8);
 
         da.setTargetPosition(-1500);
         da.setPower(0.6);
@@ -680,7 +680,7 @@ public class SkyStone_AutoB extends LinearOpMode {
         betterwait(250);
 
         moveTo(13,0.4);
-        turnTo(-45,0.4);
+        turnTo(45,0.4);
         moveTo(-25,0.4);
 
         /*
@@ -696,7 +696,8 @@ public class SkyStone_AutoB extends LinearOpMode {
 
         sv.setPosition(0.5);
         betterwait(500);
-        strafeTo(30,1);
+        
+        strafeTo(-30,1);
         moveTo(35,1);
 
         targetsSkyStone.deactivate();
