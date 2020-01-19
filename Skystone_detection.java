@@ -16,6 +16,7 @@ import java.io.IOException;
 
 import static android.graphics.Bitmap.createBitmap;
 import static android.graphics.Bitmap.createScaledBitmap;
+import android.graphics.Matrix;
 
 public class Skystone_detection{
 
@@ -107,25 +108,28 @@ public class Skystone_detection{
                 }
             }
 
+            //rotate the bitmap
+            Matrix matrix = new Matrix();
+            matrix.postRotate(90);
+
+            bitmap = createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+
             int cropStartX;
             int cropStartY;
             int cropWidth;
             int cropHeight;
 
             if (red) {
-                cropStartX = (int) ((140.0 / 720.0) * bitmap.getWidth());
-                cropStartY = (int) ((100.0 / 480.0) * bitmap.getHeight());
-                cropWidth = (int) ((550.0 / 720.0) * bitmap.getWidth());
-                cropHeight = (int) ((130.0 / 480.0) * bitmap.getHeight());
+                cropStartX = (int) ((20.0 / 480.0) * bitmap.getWidth());
+                cropStartY = (int) ((315.0 / 720.0) * bitmap.getHeight());
+                cropWidth = (int) ((440.0 / 480.0) * bitmap.getWidth());
+                cropHeight = (int) ((35.0 / 720.0) * bitmap.getHeight());
             } else {
-                cropStartX = (int) ((370.0 / 1280.0) * bitmap.getWidth());
-                cropStartY = (int) ((170.0 / 720.0) * bitmap.getHeight());
-                cropWidth = (int) ((890.0 / 1280.0) * bitmap.getWidth());
-                cropHeight = (int) ((125.0 / 720.0) * bitmap.getHeight());
+                cropStartX = (int) ((20.0 / 480.0) * bitmap.getWidth());
+                cropStartY = (int) ((315.0 / 720.0) * bitmap.getHeight());
+                cropWidth = (int) ((440.0 / 480.0) * bitmap.getWidth());
+                cropHeight = (int) ((35.0 / 720.0) * bitmap.getHeight());
             }
-
-
-
 
             bitmap = createBitmap(bitmap, cropStartX, cropStartY, cropWidth, cropHeight); //Cropped Bitmap to show only stones
 
@@ -157,8 +161,8 @@ public class Skystone_detection{
             int bitmapWidth = bitmap.getWidth();
             int bitmapHeight = bitmap.getHeight();
             int colWidth = (int) ((double) bitmapWidth / 6.0);
-            int colorLStartCol = (int) ((double) bitmapWidth * (1.0 / 6.0) - ((double) colWidth / 2.0));
-            int colorCStartCol = (int) ((double) bitmapWidth * (3.0 / 6.0) - ((double) colWidth / 2.0));
+            int colorLStartCol = (int) ((double) bitmapWidth * (0.75 / 6.0) - ((double) colWidth / 2.0));
+            int colorCStartCol = (int) ((double) bitmapWidth * (2.5 / 6.0) - ((double) colWidth / 2.0));
             int colorRStartCol = (int) ((double) bitmapWidth * (5.0 / 6.0) - ((double) colWidth / 2.0));
 
             for (height = 0; height < bitmapHeight; ++height) {
@@ -168,16 +172,6 @@ public class Skystone_detection{
                         yellowCountL += Color.red(pixel);
                         blackCountL += Color.blue(pixel);
                     }
-
-                    /*
-                    if (Color.red(pixel) > 120 && Color.green(pixel) > 80 && Color.blue(pixel) < 20) {
-                        yellowCountL += 1;
-                    } else if (Color.red(pixel) < 120 && Color.green(pixel) < 120 && Color.blue(pixel) < 120) {
-                        blackCountL += 1;
-                    }
-                     */
-
-                    //colorcountL += Color.red(pixel) + Color.green(pixel) + Color.blue(pixel);
                 }
                 for (width = colorCStartCol; width < colorCStartCol + colWidth; ++width) {
                     pixel = bitmap.getPixel(width, height);
@@ -186,14 +180,6 @@ public class Skystone_detection{
                         yellowCountC += Color.red(pixel);
                         blackCountC += Color.blue(pixel);
                     }
-                    /*
-                    if (Color.red(pixel) > 120 && Color.green(pixel) > 80 && Color.blue(pixel) < 20) {
-                        yellowCountC += 1;
-                    } else if (Color.red(pixel) < 120 && Color.green(pixel) < 120 && Color.blue(pixel) < 120) {
-                        blackCountC += 1;
-                    }
-                    */
-                    //colorcountC += Color.red(pixel) + Color.green(pixel) + Color.blue(pixel);
                 }
 
                 for (width = colorRStartCol; width < colorRStartCol + colWidth; ++width) {
@@ -203,14 +189,6 @@ public class Skystone_detection{
                         yellowCountR += Color.red(pixel);
                         blackCountR += Color.blue(pixel);
                     }
-                    /*
-                    if (Color.red(pixel) > 120 && Color.green(pixel) > 80 && Color.blue(pixel) < 20) {
-                        yellowCountR += 1;
-                    } else if (Color.red(pixel) < 120 && Color.green(pixel) < 120 && Color.blue(pixel) < 120) {
-                        blackCountR += 1;
-                    }
-                    */
-                    //colorcountR += Color.red(pixel) + Color.green(pixel) + Color.blue(pixel);
                 }
             }
         }
@@ -221,24 +199,12 @@ public class Skystone_detection{
 
 
         String pos;
-        /*
-        DbgLog.msg("color L: " + Double.toString(colorcountL));
-        DbgLog.msg("color C: " + Double.toString(colorcountC));
-        DbgLog.msg("color R: " + Double.toString(colorcountR));
-        if (colorcountL < colorcountC && colorcountL < colorcountR) {
-            pos = skystonePos.LEFT;
-        } else if (colorcountC < colorcountL && colorcountC < colorcountR) {
-            pos = skystonePos.CENTER;
-        } else {
-            pos = skystonePos.RIGHT;
-        }
-*/
         if (blackYellowRatioL > blackYellowRatioC && blackYellowRatioL > blackYellowRatioR) {
-            pos = "LEFT";
+            pos = "RIGHT";
         } else if (blackYellowRatioC > blackYellowRatioL && blackYellowRatioC > blackYellowRatioR) {
             pos = "CENTER";
         } else {
-            pos = "RIGHT";
+            pos = "LEFT";
         }
 
 
