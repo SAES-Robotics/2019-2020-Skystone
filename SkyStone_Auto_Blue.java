@@ -293,6 +293,8 @@ public class SkyStone_Auto_Blue extends LinearOpMode {
         }
         da.setPower(0);
 
+        moveTo(10, 0.7);
+
         ta.setTargetPosition(700);
         ta.setPower(0.4);
         while(ta.getCurrentPosition()<ta.getTargetPosition() && opModeIsActive()){
@@ -301,7 +303,8 @@ public class SkyStone_Auto_Blue extends LinearOpMode {
         }
         ta.setPower(0);
 
-        md.setTargetPosition(-1800);
+
+        md.setTargetPosition(-1500);
         md.setPower(0.5);
         while (md.getCurrentPosition()>md.getTargetPosition() && opModeIsActive()){
             telemetry.addData("md",md.getCurrentPosition());
@@ -309,28 +312,8 @@ public class SkyStone_Auto_Blue extends LinearOpMode {
         }
         md.setPower(0);
 
-
         strafeTo(-25,0.5);
-
         moveTo(-10,0.5);
-
-
-
-        ta.setTargetPosition(0);
-        ta.setPower(-0.25);
-        while(ta.getCurrentPosition()>ta.getTargetPosition() && opModeIsActive()){
-            telemetry.addData("ta",ta.getCurrentPosition());
-            telemetry.update();
-        }
-        ta.setPower(0);
-
-        md.setTargetPosition(0);
-        md.setPower(-0.3);
-        while (md.getCurrentPosition()<md.getTargetPosition() && opModeIsActive()){
-            telemetry.addData("md",md.getCurrentPosition());
-            telemetry.update();
-        }
-        md.setPower(0);
 
         da.setTargetPosition(0);
         da.setPower(-0.25);
@@ -340,6 +323,21 @@ public class SkyStone_Auto_Blue extends LinearOpMode {
         }
         da.setPower(0);
 
+        md.setTargetPosition(-1000);
+        md.setPower(-0.3);
+        while (md.getCurrentPosition()<md.getTargetPosition() && opModeIsActive()){
+            telemetry.addData("md",md.getCurrentPosition());
+            telemetry.update();
+        }
+        md.setPower(0);
+
+        ta.setTargetPosition(300);
+        ta.setPower(-0.25);
+        while(ta.getCurrentPosition()>ta.getTargetPosition() && opModeIsActive()){
+            telemetry.addData("ta",ta.getCurrentPosition());
+            telemetry.update();
+        }
+        ta.setPower(0);
     }
 
 
@@ -435,11 +433,9 @@ public class SkyStone_Auto_Blue extends LinearOpMode {
 
         moveTo(-10, 0.5);
 
-        turnTo(-90, 0.5);
-
         if( position == "LEFT" ) {
             // SkyStone is on the left
-            moveTo(200, 0.7);
+            strafeTo(-200, 1.0);
         } else if( position == "RIGHT" ) {
             // SkyStone is on the right
             //TODO move to depositing position
@@ -448,8 +444,6 @@ public class SkyStone_Auto_Blue extends LinearOpMode {
             //TODO move to depositing position
         }
 
-        strafeTo(-10, 0.5);
-        turnTo(90, 0.5);
         drop();
     }
 
