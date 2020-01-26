@@ -1,3 +1,4 @@
+
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
@@ -8,24 +9,12 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
 
 
@@ -85,6 +74,37 @@ public class SkyStone_Auto_Blue extends LinearOpMode {
         betterwait(250);
     }
 
+    private void moveTosv(double cen, double speed) {
+        fr.setTargetPosition( (int) -Math.round(cen * MOVE) + fr.getCurrentPosition() );
+
+        if (fr.getCurrentPosition() > fr.getTargetPosition())
+            while ( opModeIsActive() && fr.getCurrentPosition() > fr.getTargetPosition() ) {
+                //correction = checkDirection(cAngle, 0.03);
+                fl.setPower(speed - correction);
+                fr.setPower(speed);
+                bl.setPower(speed - correction);
+                br.setPower(speed);
+                sv.setPosition(0);
+                idle();
+            }
+        else
+            while ( opModeIsActive() && fr.getCurrentPosition() < fr.getTargetPosition() ) {
+                //correction = checkDirection(cAngle, 0.03);
+                fl.setPower(-speed + correction);
+                fr.setPower(-speed);
+                bl.setPower(-speed + correction);
+                br.setPower(-speed);
+                sv.setPosition(0);
+                idle();
+            }
+
+        fl.setPower(0);
+        fr.setPower(0);
+        bl.setPower(0);
+        br.setPower(0);
+
+        betterwait(250);
+    }
     // turns a certain number of degrees
     //
     // makes sure that the current angle is only
@@ -116,6 +136,49 @@ public class SkyStone_Auto_Blue extends LinearOpMode {
             while ( opModeIsActive() && fr.getCurrentPosition() > fr.getTargetPosition() ) { if(i++ % 15 == 0) getAngle(); else idle(); }
         else
             while ( opModeIsActive() && fr.getCurrentPosition() < fr.getTargetPosition() ) { if(i++ % 15 == 0) getAngle(); else idle(); }
+
+        // turn the motors off.
+        fl.setPower(0);
+        fr.setPower(0);
+        bl.setPower(0);
+        br.setPower(0);
+
+        betterwait(250);
+
+        //correct the turn until within acceptable error bounds
+        double error = cAngle + getAngle();
+
+        if(error > 2)
+            turnToo(error, speed);
+    }
+
+    private void turnTosv(double degrees, double speed) {
+        cAngle += degrees;
+        turnToosv(degrees, speed);
+    }
+
+    //DONT USE THIS ONE
+    private void turnToosv(double degrees, double speed) {
+        fr.setTargetPosition( (int) -Math.round(degrees * TURN) + fr.getCurrentPosition() );
+
+        if (degrees > 0) {   // turn right.
+            fl.setPower(speed);
+            fr.setPower(-speed);
+            bl.setPower(speed);
+            br.setPower(-speed);
+        } else if (degrees < 0) {   // turn left.
+            fl.setPower(-speed);
+            fr.setPower(speed);
+            bl.setPower(-speed);
+            br.setPower(speed);
+        } else
+            return;
+
+        int i = 1;
+        if (fr.getCurrentPosition() > fr.getTargetPosition())
+            while ( opModeIsActive() && fr.getCurrentPosition() > fr.getTargetPosition() ) { sv.setPosition(0);if(i++ % 15 == 0) getAngle(); else idle(); }
+        else
+            while ( opModeIsActive() && fr.getCurrentPosition() < fr.getTargetPosition() ) { sv.setPosition(0);if(i++ % 15 == 0) getAngle(); else idle(); }
 
         // turn the motors off.
         fl.setPower(0);
@@ -301,7 +364,7 @@ public class SkyStone_Auto_Blue extends LinearOpMode {
         }
         da.setPower(0);
 
-        moveTo(30, 0.7);
+        moveTo(25, 0.7);
 
         ta.setTargetPosition(700);
         ta.setPower(0.4);
@@ -320,16 +383,10 @@ public class SkyStone_Auto_Blue extends LinearOpMode {
         }
         md.setPower(0);
 
-        strafeTo(30,1.0);
-        moveTo(-5,0.7);
+        strafeTo(-30,1.0);
+        moveTo(-7,0.7);
 
-        da.setTargetPosition(0);
-        da.setPower(-0.25);
-        while(da.getCurrentPosition()<da.getTargetPosition() && opModeIsActive()){
-            telemetry.addData("da",da.getCurrentPosition());
-            telemetry.update();
-        }
-        da.setPower(0);
+
 
         md.setTargetPosition(-1000);
         md.setPower(-0.3);
@@ -415,7 +472,7 @@ public class SkyStone_Auto_Blue extends LinearOpMode {
         telemetry.addData("SkyStone Position",position);
         telemetry.update();
 
-        moveTo(73,0.7);
+        moveTo(71,0.7);
         sv.setPosition(0.5);
 
         if( position == "LEFT" ) {
@@ -435,9 +492,10 @@ public class SkyStone_Auto_Blue extends LinearOpMode {
 
         if( position == "LEFT" ) {
             // SkyStone is on the left
-            strafeTo(-200, 1.0);
+            strafeTo(-180, 1.0);
         } else if( position == "RIGHT" ) {
             // SkyStone is on the right
+
             //TODO move to depositing position
         } else {
             // SkyStone is in the center
@@ -446,11 +504,27 @@ public class SkyStone_Auto_Blue extends LinearOpMode {
 
         drop();
 
-        turnTo(150, 0.6);
-        moveTo(-10, 0.8);
+        turnTo(155, 0.6);
+        da.setTargetPosition(0);
+        da.setPower(-0.25);
+        while(da.getCurrentPosition()<da.getTargetPosition() && opModeIsActive()){
+            telemetry.addData("da",da.getCurrentPosition());
+            telemetry.update();
+        }
+        da.setPower(0);
+        moveTo(-3,0.6);
         sv.setPosition(0);
-        betterwait(500);
-        moveTo(50, 1.0);
+        telemetry.addData("cangle",cAngle);
+        telemetry.update();
+        betterwait(4000);
+
+        moveTosv(8, 0.25);
+        moveTosv(50,0.5);
+        turnTosv(-135,0.5);
+        sv.setPosition(0.5);
+        strafeTo(-15,0.5);
+        moveTo(10,0.5);
+
     }
 
 }
