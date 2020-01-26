@@ -1,4 +1,3 @@
-
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
@@ -28,7 +27,7 @@ public class SkyStone_Auto_Blue extends LinearOpMode {
 
     //keep track of angles
     private Orientation lastAngles = new Orientation();
-    private double globalAngle, correction, cAngle = 0;
+    private double globalAngle, correction, cAngle = 0, gain = 0.02;
 
     private static final double STRAFE = 27, MOVE = 19.16, TURN = 14.55; //taken from last years have to set
 
@@ -152,6 +151,49 @@ public class SkyStone_Auto_Blue extends LinearOpMode {
             turnToo(error, speed);
     }
 
+    private void turnToSpecial(double degrees, double speed) {
+        cAngle += degrees;
+        turnTooSpecial(degrees, speed);
+    }
+
+    //DONT USE THIS ONE
+    private void turnTooSpecial(double degrees, double speed) {
+        fr.setTargetPosition( (int) -Math.round(degrees * TURN) + fr.getCurrentPosition() );
+
+        if (degrees > 0) {   // turn right.
+            fl.setPower(2 * speed);
+            //fr.setPower(-2 * speed);
+            bl.setPower(2 * speed);
+            //br.setPower(-speed);
+        } else if (degrees < 0) {   // turn left.
+            fl.setPower(-2 * speed);
+            //fr.setPower(2 * speed);
+            bl.setPower(-2 * speed);
+            //br.setPower(2 * speed);
+        } else
+            return;
+
+        int i = 1;
+        if (fr.getCurrentPosition() > fr.getTargetPosition())
+            while ( opModeIsActive() && fr.getCurrentPosition() > fr.getTargetPosition() ) { sv.setPosition(0);if(i++ % 15 == 0) getAngle(); else idle(); }
+        else
+            while ( opModeIsActive() && fr.getCurrentPosition() < fr.getTargetPosition() ) { sv.setPosition(0);if(i++ % 15 == 0) getAngle(); else idle(); }
+
+        // turn the motors off.
+        fl.setPower(0);
+        fr.setPower(0);
+        bl.setPower(0);
+        br.setPower(0);
+
+        betterwait(250);
+
+        //correct the turn until within acceptable error bounds
+        double error = cAngle + getAngle();
+
+        if(error > 2)
+            turnTooSpecial(error, speed);
+    }
+
     private void turnTosv(double degrees, double speed) {
         cAngle += degrees;
         turnToosv(degrees, speed);
@@ -192,7 +234,7 @@ public class SkyStone_Auto_Blue extends LinearOpMode {
         double error = cAngle + getAngle();
 
         if(error > 2)
-            turnToo(error, speed);
+            turnToosv(error, speed);
     }
 
     // strafes a certain number of centimeters (not recommended)
@@ -200,7 +242,7 @@ public class SkyStone_Auto_Blue extends LinearOpMode {
         fr.setTargetPosition( (int) -Math.round(cen * STRAFE) + fr.getCurrentPosition());
         if (fr.getCurrentPosition() < fr.getTargetPosition())
             while ( opModeIsActive() && fr.getCurrentPosition() < fr.getTargetPosition() ) {
-                correction = checkDirection(cAngle, 0.02);
+                correction = checkDirection(cAngle, gain);
 
                 fl.setPower(-pow);
                 fr.setPower(pow - correction);
@@ -209,7 +251,7 @@ public class SkyStone_Auto_Blue extends LinearOpMode {
             }
         else
             while ( opModeIsActive() && fr.getCurrentPosition() > fr.getTargetPosition() ) {
-                correction = checkDirection(cAngle, 0.02);
+                correction = checkDirection(cAngle, gain);
 
 
                 fl.setPower(pow);
@@ -269,7 +311,7 @@ public class SkyStone_Auto_Blue extends LinearOpMode {
      * See if we are moving in a straight line and if not return a power correction value.
      * @return Power adjustment, + is adjust left - is adjust right.
      */
-    private double checkDirection(double a, double gain) {
+    private double checkDirection(double a, double cgain) {
         // The gain value determines how sensitive the correction is to direction changes.
         // You will have to experiment with your robot to get small smooth direction changes
         // to stay on a straight line.
@@ -280,7 +322,7 @@ public class SkyStone_Auto_Blue extends LinearOpMode {
         if (angle == 0)
             correction = 0;             // no adjustment.
         else
-            correction = -angle * gain;        // reverse sign of angle for correction.
+            correction = -angle * cgain;        // reverse sign of angle for correction.
 
         return correction;
     }
@@ -457,6 +499,8 @@ public class SkyStone_Auto_Blue extends LinearOpMode {
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
         Skystone_detection sky = new Skystone_detection(vuforia);
 
+        gain = 0.02;
+
         //update status
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -504,7 +548,7 @@ public class SkyStone_Auto_Blue extends LinearOpMode {
 
         drop();
 
-        turnTo(155, 0.6);
+        turnTo(160, 0.6);
         da.setTargetPosition(0);
         da.setPower(-0.25);
         while(da.getCurrentPosition()<da.getTargetPosition() && opModeIsActive()){
@@ -512,16 +556,15 @@ public class SkyStone_Auto_Blue extends LinearOpMode {
             telemetry.update();
         }
         da.setPower(0);
-        moveTo(-3,0.6);
+        moveTo(-5,0.6);
         sv.setPosition(0);
-        telemetry.addData("cangle",cAngle);
-        telemetry.update();
-        betterwait(4000);
+        betterwait(250);
 
-        moveTosv(8, 0.25);
+        moveTosv(10, 0.25);
         moveTosv(50,0.5);
-        turnTosv(-135,0.5);
+        turnToSpecial(-180,0.3);
         sv.setPosition(0.5);
+        gain = 0; //don't judge
         strafeTo(-15,0.5);
         moveTo(10,0.5);
 
