@@ -32,12 +32,7 @@ public class Skystone_detection{
 
     public String vuforiascan(boolean saveBitmaps, boolean red) {
         Image rgbImage = null;
-        int rgbTries = 0;
-        /*
-        double colorcountL = 0;
-        double colorcountC = 0;
-        double colorcountR = 0;
-        */
+
         double yellowCountL = 1;
         double yellowCountC = 1;
         double yellowCountR = 1;
@@ -200,11 +195,11 @@ public class Skystone_detection{
 
         String pos;
         if (blackYellowRatioL > blackYellowRatioC && blackYellowRatioL > blackYellowRatioR) {
-            pos = "RIGHT";
+            pos = red ? "CENTER" : "RIGHT";
         } else if (blackYellowRatioC > blackYellowRatioL && blackYellowRatioC > blackYellowRatioR) {
-            pos = "CENTER";
+            pos = red ? "LEFT" : "CENTER";
         } else {
-            pos = "LEFT";
+            pos = red ? "RIGHT" : "LEFT";
         }
 
 
