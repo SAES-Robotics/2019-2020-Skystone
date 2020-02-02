@@ -17,8 +17,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
 
 
-@Autonomous(name="SkyStone Blue")
-public class SkyStone_Auto_Blue extends LinearOpMode {
+@Autonomous(name="SkyStone Red")
+public class Skystone_Auto_Red extends LinearOpMode {
     // motors
     private DcMotor fl, fr, bl, br, ta, da, md;
     private Servo sv;
@@ -162,10 +162,10 @@ public class SkyStone_Auto_Blue extends LinearOpMode {
         fr.setTargetPosition( (int) -Math.round(degrees * TURN) + fr.getCurrentPosition() );
 
         if (degrees > 0) {   // turn right.
-            fl.setPower(2 * speed);
-            fr.setPower(-2 * speed);
-            bl.setPower(speed);
-            br.setPower(-speed);
+            fl.setPower(speed);
+            fr.setPower(-speed);
+            bl.setPower(2 * speed);
+            br.setPower(-2 * speed);
         } else if (degrees < 0) {   // turn left.
             fl.setPower(-2 * speed);
             fr.setPower(2 * speed);
@@ -213,9 +213,9 @@ public class SkyStone_Auto_Blue extends LinearOpMode {
 
 
                 fl.setPower(pow);
-                fr.setPower(-pow - correction);
+                fr.setPower(-pow + correction);
                 bl.setPower(-pow);
-                br.setPower(pow + correction);
+                br.setPower(pow - correction);
             }
 
         fl.setPower(0);
@@ -364,7 +364,7 @@ public class SkyStone_Auto_Blue extends LinearOpMode {
         }
         da.setPower(0);
 
-        moveTo(32, 0.7);
+        moveTo(44, 0.7);
 
         ta.setTargetPosition(700);
         ta.setPower(0.4);
@@ -383,7 +383,7 @@ public class SkyStone_Auto_Blue extends LinearOpMode {
         }
         md.setPower(0);
 
-        strafeTo(-30,1.0);
+        strafeTo(35,1.0);
         moveTo(-7,0.7);
 
 
@@ -470,42 +470,42 @@ public class SkyStone_Auto_Blue extends LinearOpMode {
         telemetry.addData("Status", "Running");
         telemetry.update();
 
-        String position = sky.vuforiascan(true,false);
+        String position = sky.vuforiascan(true,true);
         telemetry.addData("SkyStone Position",position);
         telemetry.update();
 
-        moveTo(70,0.7);
+        moveTo(71,0.7);
         sv.setPosition(0.5);
 
         if( position == "LEFT" ) {
             // SkyStone is on the left
-            strafeTo(-35, 0.7);
+            strafeTo(-6, 0.7);
         } else if( position == "RIGHT" ) {
             // SkyStone is on the right
-            strafeTo(6, 0.7);
+            strafeTo(29, 0.7);
         } else {
             // SkyStone is in the center
-            strafeTo(-14, 0.7);
+            strafeTo(8, 0.7);
         }
 
         pickup();
 
-        moveTo(-10, 0.5);
+        moveTo(-9, 0.5);
 
         if( position == "LEFT" ) {
             // SkyStone is on the left
-            strafeTo(-180, 1.0);
+            strafeTo(208, 1.0);
         } else if( position == "RIGHT" ) {
             // SkyStone is on the right
-            strafeTo(-221, 1.0);
+            strafeTo(178, 1.0);
         } else {
             // SkyStone is in the center
-            strafeTo(-201, 1.0);
+            strafeTo(193, 1.0);
         }
 
         drop();
 
-        turnTo(160, 0.6);
+        turnTo(-190, 0.6);
         da.setTargetPosition(0);
         da.setPower(-0.25);
         while(da.getCurrentPosition()<da.getTargetPosition() && opModeIsActive()){
@@ -513,26 +513,17 @@ public class SkyStone_Auto_Blue extends LinearOpMode {
             telemetry.update();
         }
         da.setPower(0);
-        moveTo(-5,0.6);
+        moveTo(-18,0.6);
         sv.setPosition(0);
         betterwait(250);
 
         moveTosv(12, 0.25);
         betterwait(250);
-        moveTosv(50,0.3);
-        turnToSpecial(-180,0.3);
+        moveTosv(30,0.4);
+        turnToSpecial(160,0.4);
         sv.setPosition(0.5);
         gain = 0; //don't judge
-        strafeTo(-15,0.5);
-
-        da.setTargetPosition(400);
-        da.setPower(0.6);
-        while(da.getCurrentPosition()>da.getTargetPosition() && opModeIsActive()){
-            telemetry.addData("da",da.getCurrentPosition());
-            telemetry.update();
-        }
-        da.setPower(0);
-
+        strafeTo(15,0.5);
         moveTo(80,0.5);
 
     }
