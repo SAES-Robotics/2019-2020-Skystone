@@ -162,10 +162,10 @@ public class Skystone_Auto_Red extends LinearOpMode {
         fr.setTargetPosition( (int) -Math.round(degrees * TURN) + fr.getCurrentPosition() );
 
         if (degrees > 0) {   // turn right.
-            fl.setPower(speed);
-            fr.setPower(-speed);
-            bl.setPower(2 * speed);
-            br.setPower(-2 * speed);
+            fl.setPower(2 * speed);
+            fr.setPower(-2 * speed);
+            bl.setPower(speed);
+            br.setPower(-speed);
         } else if (degrees < 0) {   // turn left.
             fl.setPower(-2 * speed);
             fr.setPower(2 * speed);
@@ -364,7 +364,7 @@ public class Skystone_Auto_Red extends LinearOpMode {
         }
         da.setPower(0);
 
-        moveTo(44, 0.7);
+        moveTo(52, 0.7);
 
         ta.setTargetPosition(700);
         ta.setPower(0.4);
@@ -383,7 +383,7 @@ public class Skystone_Auto_Red extends LinearOpMode {
         }
         md.setPower(0);
 
-        strafeTo(35,1.0);
+        strafeTo(39,1.0);
         moveTo(-7,0.7);
 
 
@@ -474,12 +474,12 @@ public class Skystone_Auto_Red extends LinearOpMode {
         telemetry.addData("SkyStone Position",position);
         telemetry.update();
 
-        moveTo(71,0.7);
+        moveTo(72,0.7);
         sv.setPosition(0.5);
 
         if( position == "LEFT" ) {
             // SkyStone is on the left
-            strafeTo(-6, 0.7);
+            strafeTo(-12, 0.7);
         } else if( position == "RIGHT" ) {
             // SkyStone is on the right
             strafeTo(29, 0.7);
@@ -494,13 +494,13 @@ public class Skystone_Auto_Red extends LinearOpMode {
 
         if( position == "LEFT" ) {
             // SkyStone is on the left
-            strafeTo(208, 1.0);
+            strafeTo(212, 1.0);
         } else if( position == "RIGHT" ) {
             // SkyStone is on the right
             strafeTo(178, 1.0);
         } else {
             // SkyStone is in the center
-            strafeTo(193, 1.0);
+            strafeTo(195, 1.0);
         }
 
         drop();
@@ -513,14 +513,17 @@ public class Skystone_Auto_Red extends LinearOpMode {
             telemetry.update();
         }
         da.setPower(0);
-        moveTo(-18,0.6);
+        if( position == "CENTER" )
+            moveTo(-22,0.6);
+        else
+            moveTo(-18,0.6);
         sv.setPosition(0);
         betterwait(250);
 
         moveTosv(12, 0.25);
         betterwait(250);
-        moveTosv(30,0.4);
-        turnToSpecial(160,0.4);
+        moveTosv(30,0.5);
+        turnToSpecial(100,0.4);
         sv.setPosition(0.5);
         gain = 0; //don't judge
         strafeTo(15,0.5);
