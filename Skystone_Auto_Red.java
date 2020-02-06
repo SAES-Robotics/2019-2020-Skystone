@@ -522,7 +522,7 @@ public class Skystone_Auto_Red extends LinearOpMode {
 
         moveTosv(12, 0.25);
         betterwait(250);
-        moveTosv(30,0.5);
+        moveTosv(35,0.5);
         turnToSpecial(100,0.4);
         sv.setPosition(0.5);
         gain = 0; //don't judge
