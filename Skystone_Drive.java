@@ -44,19 +44,14 @@ public class SkystoneDrive extends LinearOpMode {
         ta.setDirection(DcMotorSimple.Direction.REVERSE);
         da.setDirection(DcMotorSimple.Direction.REVERSE);
 
+
+        //encoder settings
         ta.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         da.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         ta.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         da.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         md.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         md.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        //encoder settings
-        /*robotlift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        armextend.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        armextend.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        armrotate.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        robotlift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);*/
 
         //update status
         telemetry.addData("Status", "Initialized");
@@ -64,22 +59,7 @@ public class SkystoneDrive extends LinearOpMode {
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
-        /*
-        ta.setTargetPosition(300);
-        ta.setPower(0.4);
-        while(ta.getCurrentPosition()<ta.getTargetPosition() && opModeIsActive()){
-            telemetry.addData("ta",ta.getCurrentPosition());
-            telemetry.update();
-        }
-        ta.setPower(0);
 
-        md.setTargetPosition(-700);
-        md.setPower(0.3);
-        while (md.getCurrentPosition()>md.getTargetPosition() && opModeIsActive()){
-
-            telemetry.addData("md",md.getCurrentPosition());
-            telemetry.update();
-        }*/
 
 
 
@@ -90,60 +70,62 @@ public class SkystoneDrive extends LinearOpMode {
         double speed_mutplier = 0.3;
         boolean down = false;
         double arm_speed = 0.5;
-        double other_speed = 0.3;
-        boolean strafe = false;
-        boolean fixmode = true;
+
+        boolean fixmode = false;
+        boolean pressed = false;
+        sv.setPosition(0.25);
         while (opModeIsActive()) {
-            //telemetry.addData("hi", opModeIsActive());
+
             /* gamepad2 controls */
-            if(((this.gamepad2.dpad_right && ta.getCurrentPosition()<888) || (ta.getCurrentPosition()<0 && !fixmode ))|| (this.gamepad2.dpad_right && fixmode) ){ //8529 max
+            if(this.gamepad2.dpad_right || (ta.getCurrentPosition()<-700 && !fixmode)){ //8529 max
                 ta.setPower(0.4);
             }
-            else if((this.gamepad2.dpad_left  || (ta.getCurrentPosition()>888 && !fixmode)) || (this.gamepad2.dpad_left && fixmode)){
+            else if(this.gamepad2.dpad_left){
                 ta.setPower(-0.25);
             }
             else{ta.setPower(0);}
 
 
 
-            if( ((this.gamepad2.dpad_up && da.getCurrentPosition() < 8530) || (da.getCurrentPosition()<0 && !fixmode)) || (this.gamepad2.dpad_up && fixmode)
-            ){
+            if(this.gamepad2.dpad_up || (da.getCurrentPosition()<0 && !fixmode))
+            {
                 da.setPower(-arm_speed-0.1);
             }
-            else if(((this.gamepad2.dpad_down && da.getCurrentPosition()>0) ||  (da.getCurrentPosition()>8530 && !fixmode)) || (this.gamepad2.dpad_down && fixmode) ){
+            else if(this.gamepad2.dpad_down ){
                 da.setPower(arm_speed+0.1);
             }
 
             else{da.setPower(0);
             }
 
-            if(this.gamepad2.left_trigger>0.3){ //-2450
+            if(this.gamepad2.left_trigger>0.3){
                 md.setPower(0.5);
             }
             else if(this.gamepad2.right_trigger > 0.3 ) {
                 md.setPower(-0.3);}
 
             else{md.setPower(0);}
-            /*
+
             if(this.gamepad2.right_bumper){
-                md.setTargetPosition(-1400);
-                md.setPower(0.3);
+                md.setTargetPosition(-300);
+                md.setPower(0.5);
                 while (md.getCurrentPosition()>md.getTargetPosition() && opModeIsActive()){
                     telemetry.addData("md",md.getCurrentPosition());
                     telemetry.update();
                 }
+                pressed = true;
             }
-            else if(!this.gamepad2.right_bumper && md.getTargetPosition() > -1100){
-                md.setTargetPosition(-1000);
+            else if(pressed){
+                md.setTargetPosition(100);
                 md.setPower(-0.5);
                 while (md.getCurrentPosition()<md.getTargetPosition() && opModeIsActive()){
                     telemetry.addData("md",md.getCurrentPosition());
                     telemetry.update();
                 }
+                pressed = false;
 
             }
 
-             */
 
             if(this.gamepad2.y){
                 fixmode = !fixmode;
@@ -204,6 +186,9 @@ public class SkystoneDrive extends LinearOpMode {
             telemetry.addData("fr power",(move0 + this.gamepad1.right_stick_x) * speed);
             telemetry.addData("fr power",(move0 - this.gamepad1.right_stick_x) * speed);
             telemetry.addData("fr power",(move1 + this.gamepad1.right_stick_x) * speed);
+            if(sv.getPosition()== 0){
+                sv.setPosition(0);
+            }
 
             if(down){
                 speed *= 2;
@@ -216,3 +201,4 @@ public class SkystoneDrive extends LinearOpMode {
 
 
     }
+}
