@@ -28,6 +28,7 @@ public class SkyStone_Auto_Blue extends LinearOpMode {
     //keep track of angles
     private Orientation lastAngles = new Orientation();
     private double globalAngle, correction, cAngle = 0, gain = 0.02;
+    private String position = "";
 
     private static final double STRAFE = 27, MOVE = 19.16, TURN = 14.55; //taken from last years have to set
 
@@ -364,7 +365,10 @@ public class SkyStone_Auto_Blue extends LinearOpMode {
         }
         da.setPower(0);
 
-        moveTo(32, 0.7);
+        if( position == "LEFT" )
+            moveTo(22, 0.7);
+        else
+            moveTo(28, 0.7);
 
         ta.setTargetPosition(700);
         ta.setPower(0.4);
@@ -383,7 +387,7 @@ public class SkyStone_Auto_Blue extends LinearOpMode {
         }
         md.setPower(0);
 
-        strafeTo(-30,1.0);
+        strafeTo(-32,1.0);
         moveTo(-7,0.7);
 
 
@@ -470,11 +474,11 @@ public class SkyStone_Auto_Blue extends LinearOpMode {
         telemetry.addData("Status", "Running");
         telemetry.update();
 
-        String position = sky.vuforiascan(true,false);
+        position = sky.vuforiascan(true,false);
         telemetry.addData("SkyStone Position",position);
         telemetry.update();
 
-        moveTo(70,0.7);
+        moveTo(73,0.7);
         sv.setPosition(0.5);
 
         if( position == "LEFT" ) {
@@ -490,7 +494,7 @@ public class SkyStone_Auto_Blue extends LinearOpMode {
 
         pickup();
 
-        moveTo(-10, 0.5);
+        moveTo(-8, 0.5);
 
         if( position == "LEFT" ) {
             // SkyStone is on the left
@@ -519,7 +523,7 @@ public class SkyStone_Auto_Blue extends LinearOpMode {
 
         moveTosv(12, 0.25);
         betterwait(250);
-        moveTosv(50,0.3);
+        moveTosv(55,0.3);
         turnToSpecial(-180,0.3);
         sv.setPosition(0.5);
         gain = 0; //don't judge

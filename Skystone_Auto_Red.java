@@ -500,7 +500,7 @@ public class Skystone_Auto_Red extends LinearOpMode {
             strafeTo(178, 1.0);
         } else {
             // SkyStone is in the center
-            strafeTo(195, 1.0);
+            strafeTo(198, 1.0);
         }
 
         drop();
@@ -527,7 +527,7 @@ public class Skystone_Auto_Red extends LinearOpMode {
         sv.setPosition(0.5);
         gain = 0; //don't judge
         strafeTo(15,0.5);
-        moveTo(80,0.5);
+        moveTo(77,0.5);
 
     }
 
