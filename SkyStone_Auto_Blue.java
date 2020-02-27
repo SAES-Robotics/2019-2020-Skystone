@@ -303,7 +303,7 @@ public class SkyStone_Auto_Blue extends LinearOpMode {
         }
         da.setPower(0);
 
-        ta.setTargetPosition(700);
+        ta.setTargetPosition(650);
         ta.setPower(0.4);
         while(ta.getCurrentPosition()<ta.getTargetPosition() && opModeIsActive()){
             telemetry.addData("ta",ta.getCurrentPosition());
@@ -346,7 +346,7 @@ public class SkyStone_Auto_Blue extends LinearOpMode {
         }
         ta.setPower(0);
 
-        da.setTargetPosition(400);
+        da.setTargetPosition(500);
         da.setPower(0.6);
         while(da.getCurrentPosition()>da.getTargetPosition() && opModeIsActive()){
             telemetry.addData("da",da.getCurrentPosition());
@@ -357,7 +357,7 @@ public class SkyStone_Auto_Blue extends LinearOpMode {
 
     private void drop(){
         // move the arm up
-        da.setTargetPosition(-1000);
+        da.setTargetPosition(-1300);
         da.setPower(0.6);
         while(da.getCurrentPosition()>da.getTargetPosition() && opModeIsActive()){
             telemetry.addData("da",da.getCurrentPosition());
@@ -478,18 +478,18 @@ public class SkyStone_Auto_Blue extends LinearOpMode {
         telemetry.addData("SkyStone Position",position);
         telemetry.update();
 
-        moveTo(73,0.7);
+        moveTo(71,0.7);
         sv.setPosition(0.5);
 
         if( position == "LEFT" ) {
             // SkyStone is on the left
-            strafeTo(-35, 0.7);
+            strafeTo(-39, 0.7);
         } else if( position == "RIGHT" ) {
             // SkyStone is on the right
             strafeTo(6, 0.7);
         } else {
             // SkyStone is in the center
-            strafeTo(-14, 0.7);
+            strafeTo(-16, 0.7);
         }
 
         pickup();
@@ -527,7 +527,7 @@ public class SkyStone_Auto_Blue extends LinearOpMode {
         turnToSpecial(-180,0.3);
         sv.setPosition(0.5);
         gain = 0; //don't judge
-        strafeTo(-15,0.5);
+        strafeTo(-5,0.5);
 
         da.setTargetPosition(400);
         da.setPower(0.6);
